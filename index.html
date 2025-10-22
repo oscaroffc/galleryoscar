@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Galeri Waifu - Edisi Self Host</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root{
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --nsfw: #ef4444;
+      --nsfw-dark: #dc2626;
+      --bg: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      --bg-solid: #0f1419;
+      --card: rgba(255,255,255,0.05);
+      --card-hover: rgba(255,255,255,0.08);
+      --card-nsfw: rgba(239,68,68,0.1);
+      --glass: rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.1);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #22d3ee;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow: rgba(0,0,0,0.3);
+      --radius: 16px;
+      --gap: 16px;
+      --left-width: 280px;
+      --header-height: 70px;
+      color-scheme: dark;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,body{
+      height:100%;
+      font-family:'Inter',system-ui,-apple-system,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-solid); }
+    ::-webkit-scrollbar-thumb { 
+      background: var(--glass-border); 
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* Header */
+    header{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(15, 20, 25, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+
+    .brand{
+      font-weight: 700;
+      font-size: 22px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .brand::before {
+      content: '🏠 ';
+      -webkit-text-fill-color: var(--accent);
+    }
+
+    .header-controls{
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn{
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      padding: 12px 18px;
+      border-radius: 12px;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover{
+      background: var(--card-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn.nsfw {
+      background: var(--card-nsfw);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn.nsfw:hover {
+      border-color: var(--nsfw);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Left Sidebar */
+    .left-sidebar{
+      position: fixed;
+      left: 0;
+      top: var(--header-height);
+      bottom: 0;
+      width: var(--left-width);
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--glass-border);
+      padding: 24px;
+      z-index: 50;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title.nsfw {
+      color: var(--nsfw);
+    }
+
+    /* API Selection Section */
+    .api-section {
+      margin-bottom: 24px;
+    }
+
+    .api-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid var(--glass-border);
+    }
+
+    .api-item:hover {
+      background: var(--card-hover);
+    }
+
+    .api-item.active {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .api-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .api-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .api-categories {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .api-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .api-status.offline {
+      background: var(--danger);
+    }
+
+    .api-status.slow {
+      background: var(--warning);
+    }
+
+    .tag-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .tag-btn{
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 13px;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tag-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .tag-btn.nsfw::before {
+      background: linear-gradient(135deg, var(--nsfw), var(--nsfw-dark));
+    }
+
+    .tag-btn.active::before {
+      opacity: 1;
+    }
+
+    .tag-btn.active {
+      color: white;
+      transform: scale(1.02);
+      z-index: 1;
+    }
+
+    .tag-btn:hover:not(.active) {
+      background: var(--card-hover);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+
+    .tag-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Main Content */
+    .content{
+      margin-left: var(--left-width);
+      margin-top: var(--header-height);
+      padding: 32px 24px;
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .current-mode {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .mode-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .mode-indicator.nsfw {
+      background: var(--nsfw);
+    }
+
+    .controls{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Gallery */
+    .gallery{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--gap);
+      margin-top: 24px;
+    }
+
+    .card{
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 3/4;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--glass-border);
+    }
+
+    .card.nsfw {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .card:hover{
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border-color: var(--primary);
+    }
+
+    .card.nsfw:hover {
+      border-color: var(--nsfw);
+    }
+
+    .thumb{
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .thumb {
+      transform: scale(1.1);
+    }
+
+    .meta{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      padding: 16px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover .meta {
+      transform: translateY(0);
+    }
+
+    .meta .info {
+      color: white;
+    }
+
+    .meta .title{
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .meta .source{
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .meta .tags{
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      gap: 4px;
+    }
+
+    .tag{
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+      background: rgba(99, 102, 241, 0.8);
+      color: white;
+    }
+
+    .tag.nsfw {
+      background: rgba(239, 68, 68, 0.8);
+    }
+
+    /* Loading States */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--glass-border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Status Messages */
+    .status-message {
+      position: fixed;
+      top: 90px;
+      right: 24px;
+      padding: 12px 20px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      z-index: 90;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      max-width: 300px;
+    }
+
+    .status-message.show {
+      transform: translateX(0);
+    }
+
+    .status-message.success {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .status-message.error {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      :root {
+        --left-width: 260px;
+      }
+      
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px){
+      .left-sidebar{
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 100%;
+        z-index: 150;
+      }
+      
+      .left-sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      
+      .content{
+        margin-left: 0;
+        padding: 24px 16px;
+      }
+      
+      .gallery{
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+
+      .header-controls {
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+
+      .content-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .controls {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .current-mode {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+      
+      .content-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:16px">
+      <button id="menuBtn" class="btn" style="display:none;">☰</button>
+      <div class="brand">GALERI WAIFU</div>
+    </div>
+
+    <div class="header-controls">
+      <button id="pengaturanBtn" class="btn">⚙️ Pengaturan</button>
+      <a href="#bagian-nsfw" class="btn nsfw">🔞 Area NSFW</a>
+    </div>
+  </header>
+
+  <!-- Left Sidebar -->
+  <aside class="left-sidebar" id="leftSidebar">
+    <!-- API Selection Section -->
+    <div class="api-section">
+      <div class="section-title">🌐 Pilih Sumber API</div>
+      <div id="daftarApi">
+        <!-- API items akan dibuat oleh JavaScript -->
+      </div>
+    </div>
+
+    <!-- SFW Categories -->
+    <div class="sidebar-section">
+      <div class="section-title">✨ Kategori Aman</div>
+      <div class="tag-grid" id="tagAman">
+        <!-- Tag SFW akan dibuat oleh JavaScript -->
+      </div>
+    </div>
+
+    <!-- NSFW Categories -->
+    <div class="sidebar-section" id="bagian-nsfw">
+      <div class="section-title nsfw">🔞 Kategori Dewasa</div>
+      <div style="margin-bottom: 16px; padding: 12px; background: var(--card-nsfw); border-radius: 8px; font-size: 12px; color: var(--nsfw);">
+        ⚠️ Peringatan: Konten untuk usia 18+ tahun. Pastikan Anda berada di tempat yang tepat.
+      </div>
+      <div class="tag-grid" id="tagDewasa">
+        <!-- Tag NSFW akan dibuat oleh JavaScript -->
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="sidebar-section">
+      <div class="section-title">📊 Statistik</div>
+      <div style="font-size: 13px; color: var(--text-muted);">
+        <div>Gambar dimuat: <span id="totalGambar">0</span></div>
+        <div>Waktu sesi: <span id="waktuSesi">00:00</span></div>
+        <div>API tersedia: <span id="apiAktif">0</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="content-header">
+      <div class="current-mode">
+        <div class="mode-indicator" id="indikatorMode"></div>
+        <div>
+          <div style="font-weight: 600;"><span id="kategoriSaatIni">waifu</span></div>
+          <div style="font-size: 12px; color: var(--text-muted);">via <span id="apiSaatIni">waifu.pics</span></div>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button id="muatUlangBtn" class="btn">🔄 Muat Ulang</button>
+        <button id="tambahLagiBtn" class="btn">➕ Tambah Lagi</button>
+        <button id="acakBtn" class="btn">🎲 Acak</button>
+      </div>
+    </div>
+
+    <section id="gambar">
+      <div class="gallery" id="gallery" role="list"></div>
+      <div class="loading" id="loading" style="display:none">
+        <div class="loading-spinner"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Status Messages -->
+  <div class="status-message" id="pesanStatus"></div>
+
+  <script>
+    // Konfigurasi untuk self-hosting
+    const KONFIGURASI = {
+      // Pengaturan server
+      selfHosted: true,
+      serverPort: 3000,
+      cacheEnabled: true,
+      
+      // Konfigurasi API
+      daftarApi: {
+        'waifu.pics': {
+          nama: 'Waifu Pics',
+          urlDasar: 'https://api.waifu.pics',
+          status: 'online', // online, offline, slow
+          batasRate: 1, // request per detik
+          modeDukung: ['sfw', 'nsfw'],
+          kategori: {
+            sfw: ['waifu', 'neko', 'shinobu', 'megumin', 'bully', 'cuddle', 'cry', 'hug', 'awoo', 'kiss', 'lick', 'pat', 'smug', 'bonk', 'yeet', 'blush', 'smile', 'wave', 'highfive', 'handhold', 'nom', 'bite', 'glomp', 'slap', 'kill', 'kick', 'happy', 'wink', 'poke', 'dance', 'cringe'],
+            nsfw: ['waifu', 'neko', 'trap', 'blowjob', 'ass', 'pussy', 'thighs', 'boobs', 'ahegao', 'uniform', 'orgy', 'gif', 'tentacles', 'cum', 'masturbation', 'public', 'ero', 'glasses', 'school', 'succubus', 'gangbang', 'footjob', 'creampie', 'bondage', 'anal']
+          }
+        },
+        'waifu.im': {
+          nama: 'Waifu IM',
+          urlDasar: 'https://api.waifu.im',
+          status: 'online',
+          batasRate: 5,
+          modeDukung: ['sfw', 'nsfw'],
+          kategori: {
+            sfw: ['maid', 'waifu', 'marin-kitagawa', 'mori-calliope', 'raiden-shogun', 'oppai', 'selfies', 'uniform', 'kamisato-ayaka'],
+            nsfw: ['ass', 'hentai', 'milf', 'oral', 'paizuri', 'ecchi', 'ero', 'uniform', 'oppai']
+          }
+        },
+        'nekos.life': {
+          nama: 'Nekos Life',
+          urlDasar: 'https://nekos.life/api/v2',
+          status: 'online',
+          batasRate: 2,
+          modeDukung: ['sfw', 'nsfw'],
+          kategori: {
+            sfw: ['neko', 'waifu', 'hug', 'pat', 'cuddle', 'kiss', 'poke', 'slap', 'tickle', 'feed', 'avatar', 'wallpaper'],
+            nsfw: ['neko', 'waifu', 'boobs', 'ass', 'pussy', 'thigh', 'lewdkemo', 'cum', 'spank', 'gasm', 'lesbian', 'solo', 'pwankg', 'classic', 'kuni', 'tits', 'pussy_jpg', 'holoero', 'pussy', 'hentai', 'futanari', 'femdom', 'lewdk', 'cum_jpg', 'bj', 'nsfw_neko_gif', 'solo', 'kemonomimi', 'trap', 'blowjob', 'smallboobs']
+          }
+        },
+        'hmtai.com': {
+          nama: 'HMtai',
+          urlDasar: 'https://hmtai.hatsunia.cfd',
+          status: 'online',
+          batasRate: 3,
+          modeDukung: ['nsfw'],
+          kategori: {
+            nsfw: ['ass', 'bdsm', 'cum', 'creampie', 'manga', 'femdom', 'hentai', 'incest', 'masturbation', 'public', 'ero', 'orgy', 'elves', 'yuri', 'pantsu', 'glasses', 'cuckold', 'blowjob', 'boobjob', 'foot', 'handjob', 'boobs', 'thigh', 'paizuri', 'tentacles', 'ahegao', 'uniform', 'gangbang', 'nsfwMobileWallpaper', 'zettaiRyouiki', 'genshin', 'azureLane', 'nekopara', 'fate']
+          }
+        }
+      },
+      
+      // Pengaturan default
+      apiDefault: 'waifu.pics',
+      kategoriDefault: 'waifu',
+      modeDefault: 'sfw',
+      gambarPerMuat: 12,
+      maksCacheSize: 100 // MB
+    }
+
+    // Manajemen state
+    let stateSaatIni = {
+      api: KONFIGURASI.apiDefault,
+      kategori: KONFIGURASI.kategoriDefault,
+      mode: KONFIGURASI.modeDefault,
+      sedangMuat: false,
+      totalGambar: 0,
+      waktuMulaiSesi: Date.now(),
+      cache: new Map()
+    }
+
+    // Elemen DOM
+    const elemen = {
+      gallery: document.getElementById('gallery'),
+      loading: document.getElementById('loading'),
+      pesanStatus: document.getElementById('pesanStatus'),
+      kategoriSaatIni: document.getElementById('kategoriSaatIni'),
+      apiSaatIni: document.getElementById('apiSaatIni'),
+      indikatorMode: document.getElementById('indikatorMode'),
+      totalGambar: document.getElementById('totalGambar'),
+      waktuSesi: document.getElementById('waktuSesi'),
+      apiAktif: document.getElementById('apiAktif'),
+      daftarApi: document.getElementById('daftarApi'),
+      tagAman: document.getElementById('tagAman'),
+      tagDewasa: document.getElementById('tagDewasa')
+    }
+
+    // Fungsi untuk menampilkan pesan status
+    function tampilkanPesan(pesan, tipe = 'info', durasi = 3000) {
+      const pesanEl = elemen.pesanStatus;
+      pesanEl.textContent = pesan;
+      pesanEl.className = `status-message ${tipe} show`;
+      
+      setTimeout(() => {
+        pesanEl.classList.remove('show');
+      }, durasi);
+    }
+
+    // Fungsi untuk membangun daftar API
+    function bangunDaftarApi() {
+      const container = elemen.daftarApi;
+      container.innerHTML = '';
+      
+      Object.entries(KONFIGURASI.daftarApi).forEach(([kunci, api]) => {
+        const item = document.createElement('div');
+        item.className = `api-item ${stateSaatIni.api === kunci ? 'active' : ''}`;
+        item.onclick = () => pilihApi(kunci);
+        
+        const jumlahKategori = (api.kategori.sfw?.length || 0) + (api.kategori.nsfw?.length || 0);
+        
+        item.innerHTML = `
+          <div class="api-info">
+            <div class="api-name">${api.nama}</div>
+            <div class="api-categories">${jumlahKategori} kategori tersedia</div>
+          </div>
+          <div class="api-status ${api.status}"></div>
+        `;
+        
+        container.appendChild(item);
+      });
+    }
+
+    // Fungsi untuk membangun tag kategori
+    function bangunKategori() {
+      const apiSaatIni = KONFIGURASI.daftarApi[stateSaatIni.api];
+      
+      // Bersihkan kontainer
+      elemen.tagAman.innerHTML = '';
+      elemen.tagDewasa.innerHTML = '';
+      
+      // Bangun tag SFW
+      if (apiSaatIni.kategori.sfw) {
+        apiSaatIni.kategori.sfw.forEach(kategori => {
+          const btn = buatTombolKategori(kategori, 'sfw');
+          elemen.tagAman.appendChild(btn);
+        });
+      }
+      
+      // Bangun tag NSFW
+      if (apiSaatIni.kategori.nsfw) {
+        apiSaatIni.kategori.nsfw.forEach(kategori => {
+          const btn = buatTombolKategori(kategori, 'nsfw');
+          elemen.tagDewasa.appendChild(btn);
+        });
+      }
+    }
+
+    // Fungsi untuk membuat tombol kategori
+    function buatTombolKategori(kategori, mode) {
+      const btn = document.createElement('div');
+      btn.className = `tag-btn ${mode} ${stateSaatIni.kategori === kategori && stateSaatIni.mode === mode ? 'active' : ''}`;
+      btn.onclick = () => pilihKategori(kategori, mode);
+      btn.innerHTML = `<span>${kategori}</span>`;
+      return btn;
+    }
+
+    // Fungsi untuk memilih API
+    function pilihApi(apiKey) {
+      stateSaatIni.api = apiKey;
+      stateSaatIni.kategori = KONFIGURASI.kategoriDefault;
+      stateSaatIni.mode = KONFIGURASI.modeDefault;
+      
+      perbaruiUI();
+      bangunDaftarApi();
+      bangunKategori();
+      muatGambar(true);
+      
+      const api = KONFIGURASI.daftarApi[apiKey];
+      tampilkanPesan(`Beralih ke ${api.nama}`, 'success');
+    }
+
+    // Fungsi untuk memilih kategori
+    function pilihKategori(kategori, mode) {
+      stateSaatIni.kategori = kategori;
+      stateSaatIni.mode = mode;
+      
+      perbaruiUI();
+      bangunKategori();
+      muatGambar(true);
+      
+      tampilkanPesan(`Beralih ke kategori ${kategori} (${mode === 'sfw' ? 'Aman' : 'Dewasa'})`, 'success');
+    }
+
+    // Fungsi untuk memperbarui UI
+    function perbaruiUI() {
+      elemen.kategoriSaatIni.textContent = stateSaatIni.kategori;
+      elemen.apiSaatIni.textContent = KONFIGURASI.daftarApi[stateSaatIni.api].nama;
+      elemen.indikatorMode.className = `mode-indicator ${stateSaatIni.mode}`;
+      elemen.totalGambar.textContent = stateSaatIni.totalGambar;
+      
+      // Hitung API aktif
+      const apiAktif = Object.values(KONFIGURASI.daftarApi).filter(api => api.status === 'online').length;
+      elemen.apiAktif.textContent = apiAktif;
+    }
+
+    // Fungsi untuk memuat gambar dari API nyata
+    async function muatGambar(bersihkan = false) {
+      if (stateSaatIni.sedangMuat) return;
+      
+      stateSaatIni.sedangMuat = true;
+      elemen.loading.style.display = 'flex';
+      
+      if (bersihkan) {
+        elemen.gallery.innerHTML = '';
+        stateSaatIni.totalGambar = 0;
+      }
+      
+      try {
+        const api = KONFIGURASI.daftarApi[stateSaatIni.api];
+        const gambarBaru = [];
+        
+        // Panggil API berdasarkan sumber yang dipilih
+        for (let i = 0; i < KONFIGURASI.gambarPerMuat; i++) {
+          let urlApi = '';
+          
+          switch (stateSaatIni.api) {
+            case 'waifu.pics':
+              urlApi = `${api.urlDasar}/${stateSaatIni.mode}/${stateSaatIni.kategori}`;
+              break;
+            case 'waifu.im':
+              urlApi = `${api.urlDasar}/search/?included_tags=${stateSaatIni.kategori}&is_nsfw=${stateSaatIni.mode === 'nsfw' ? 'true' : 'false'}`;
+              break;
+            case 'nekos.life':
+              urlApi = `${api.urlDasar}/img/${stateSaatIni.kategori}`;
+              break;
+            case 'hmtai.com':
+              urlApi = `${api.urlDasar}/v2/${stateSaatIni.kategori}`;
+              break;
+          }
+          
+          try {
+            const response = await fetch(urlApi);
+            const data = await response.json();
+            
+            let urlGambar = '';
+            // Parse response berdasarkan format API
+            if (stateSaatIni.api === 'waifu.pics') {
+              urlGambar = data.url;
+            } else if (stateSaatIni.api === 'waifu.im') {
+              urlGambar = data.images?.[0]?.url || '';
+            } else if (stateSaatIni.api === 'nekos.life') {
+              urlGambar = data.url;
+            } else if (stateSaatIni.api === 'hmtai.com') {
+              urlGambar = data.url;
+            }
+            
+            if (urlGambar) {
+              const gambar = {
+                url: urlGambar,
+                judul: `${stateSaatIni.kategori} #${stateSaatIni.totalGambar + i + 1}`,
+                sumber: api.nama,
+                kategori: stateSaatIni.kategori,
+                mode: stateSaatIni.mode
+              };
+              gambarBaru.push(gambar);
+            }
+          } catch (apiError) {
+            console.log(`API call ${i + 1} gagal:`, apiError);
+            // Jika API gagal, gunakan fallback placeholder
+            const gambar = {
+              url: `https://via.placeholder.com/300x400/6366f1/ffffff?text=Gambar+${i+1}`,
+              judul: `${stateSaatIni.kategori} #${stateSaatIni.totalGambar + i + 1}`,
+              sumber: api.nama + ' (Placeholder)',
+              kategori: stateSaatIni.kategori,
+              mode: stateSaatIni.mode
+            };
+            gambarBaru.push(gambar);
+          }
+          
+          // Delay untuk menghormati rate limit
+          if (i < KONFIGURASI.gambarPerMuat - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000 / api.batasRate));
+          }
+        }
+        
+        // Tampilkan gambar
+        gambarBaru.forEach(gambar => {
+          const kartu = buatKartuGambar(gambar);
+          elemen.gallery.appendChild(kartu);
+          stateSaatIni.totalGambar++;
+        });
+        
+        perbaruiUI();
+        tampilkanPesan(`${gambarBaru.length} gambar berhasil dimuat dari ${api.nama}`, 'success');
+        
+      } catch (error) {
+        console.error('Error memuat gambar:', error);
+        tampilkanPesan('Gagal memuat gambar. Periksa koneksi internet Anda.', 'error');
+      } finally {
+        stateSaatIni.sedangMuat = false;
+        elemen.loading.style.display = 'none';
+      }
+    }
+
+    // Fungsi untuk membuat kartu gambar
+    function buatKartuGambar(gambar) {
+      const kartu = document.createElement('div');
+      kartu.className = `card ${gambar.mode}`;
+      kartu.setAttribute('role', 'listitem');
+      
+      kartu.innerHTML = `
+        <div class="thumb" style="background-image: url('${gambar.url}')"></div>
+        <div class="meta">
+          <div class="info">
+            <div class="title">${gambar.judul}</div>
+            <div class="source">${gambar.sumber}</div>
+          </div>
+          <div class="tags">
+            <div class="tag ${gambar.mode}">${gambar.kategori}</div>
+          </div>
+        </div>
+      `;
+      
+      // Event listener untuk klik
+      kartu.addEventListener('click', () => {
+        bukaPratinjau(gambar);
+      });
+      
+      return kartu;
+    }
+
+    // Fungsi untuk membuka pratinjau gambar
+    function bukaPratinjau(gambar) {
+      // Implementasi lightbox dapat ditambahkan di sini
+      tampilkanPesan(`Membuka pratinjau: ${gambar.judul}`, 'info');
+    }
+
+    // Fungsi untuk memperbarui waktu sesi
+    function perbaruiWaktuSesi() {
+      const sekarang = Date.now();
+      const durasi = sekarang - stateSaatIni.waktuMulaiSesi;
+      const menit = Math.floor(durasi / 60000);
+      const detik = Math.floor((durasi % 60000) / 1000);
+      
+      elemen.waktuSesi.textContent = `${menit.toString().padStart(2, '0')}:${detik.toString().padStart(2, '0')}`;
+    }
+
+    // Fungsi untuk kategori acak
+    function kategoriAcak() {
+      const api = KONFIGURASI.daftarApi[stateSaatIni.api];
+      const semuaKategori = [];
+      
+      if (api.kategori.sfw) {
+        api.kategori.sfw.forEach(kat => semuaKategori.push({kategori: kat, mode: 'sfw'}));
+      }
+      if (api.kategori.nsfw) {
+        api.kategori.nsfw.forEach(kat => semuaKategori.push({kategori: kat, mode: 'nsfw'}));
+      }
+      
+      const acak = semuaKategori[Math.floor(Math.random() * semuaKategori.length)];
+      pilihKategori(acak.kategori, acak.mode);
+    }
+
+    // Event listeners
+    document.getElementById('muatUlangBtn').addEventListener('click', () => {
+      muatGambar(true);
+    });
+
+    document.getElementById('tambahLagiBtn').addEventListener('click', () => {
+      muatGambar(false);
+    });
+
+    document.getElementById('acakBtn').addEventListener('click', () => {
+      kategoriAcak();
+    });
+
+    document.getElementById('pengaturanBtn').addEventListener('click', () => {
+      tampilkanPesan('Menu pengaturan akan segera tersedia', 'info');
+    });
+
+    // Responsive menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('leftSidebar');
+
+    function cekResponsive() {
+      if (window.innerWidth <= 768) {
+        menuBtn.style.display = 'inline-flex';
+        sidebar.classList.remove('mobile-open');
+      } else {
+        menuBtn.style.display = 'none';
+        sidebar.classList.remove('mobile-open');
+      }
+    }
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+    });
+
+    window.addEventListener('resize', cekResponsive);
+
+    // Inisialisasi aplikasi
+    function inisialisasi() {
+      console.log('🏠 Galeri Waifu - Self Host Edition dimulai');
+      
+      // Bangun UI
+      bangunDaftarApi();
+      bangunKategori();
+      perbaruiUI();
+      cekResponsive();
+      
+      // Muat gambar pertama
+      muatGambar(true);
+      
+      // Mulai timer sesi
+      setInterval(perbaruiWaktuSesi, 1000);
+      
+      tampilkanPesan('Galeri Waifu berhasil dimuat!', 'success');
+    }
+
+    // Jalankan inisialisasi saat DOM sudah siap
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', inisialisasi);
+    } else {
+      inisialisasi();
+    }
+
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          muatGambar(true);
+        }
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        muatGambar(false);
+      } else if (e.key === 'Escape') {
+        // Tutup sidebar mobile jika terbuka
+        sidebar.classList.remove('mobile-open');
+      }
+    });
+
+    // Auto-load saat scroll mendekati bawah
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+        if (!stateSaatIni.sedangMuat) {
+          muatGambar(false);
+        }
+      }
+    });
+    
+  </script>
+</body>
+</html>
